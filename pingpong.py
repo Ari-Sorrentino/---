@@ -35,10 +35,22 @@ class Player(GameSprite):
 game = True
 finish = False
 clock = time.Clock()
+speed_x = 2
+speed_y = 2
 
-ball = GameSprite("heaviest_thing_ever.png", 200, 200, 3, 50, 50)
+ball = GameSprite("heaviest_thing_ever.png", 100, 100, 3, 50, 50)
 racket_l = Player("wooden_bat_l.png", 30, 200, 4, 150, 150)
 racket_r = Player("wooden_bat_r.png", 420, 200, 4, 150, 150)
+
+font.init()
+font = font.Font(None, 40)
+player_l_lose = font.render("Игрок 1 проиграл!", 1, (200, 0, 0))
+player_r_lose = font.render("Игрок 2 проиграл!", 1, (200, 0, 0))
+
+'''mixer.init()
+mixer.music.load("against_the_wind.wav")
+mixer.music.play()
+mixer.music.set_volume(0.2)'''
 
 while game:
     for e in event.get():
@@ -50,6 +62,23 @@ while game:
 
         racket_l.update_l()
         racket_r.update_r()
+
+        ball.rect.x += speed_x
+        ball.rect.y += speed_y
+
+        if sprite.collide_rect(racket_l, ball) or sprite.collide_rect(racket_r, ball):
+            speed_x *= -1
+
+        if ball.rect.bottom > 500 or ball.rect.y < 0:
+            speed_y *= -1
+
+        if ball.rect.x < -30:
+            finish = True
+            main_win.blit(player_l_lose, (150, 250))
+
+        if ball.rect.x > 500:
+            finish = True
+            main_win.blit(player_r_lose, (150, 200))
 
         racket_l.draw()
         racket_r.draw()
